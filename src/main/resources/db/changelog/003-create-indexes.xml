@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd">
+
+    <changeSet id="003-create-indexes" author="maksm">
+        <comment>Создание индексов для оптимизации производительности</comment>
+        
+        <!-- Индекс для поиска кошельков по wallet_id -->
+        <createIndex tableName="wallets" indexName="idx_wallet_id">
+            <column name="wallet_id"/>
+        </createIndex>
+        
+        <!-- Индекс для поиска транзакций по кошельку -->
+        <createIndex tableName="transactions" indexName="idx_transaction_wallet_id">
+            <column name="wallet_id"/>
+        </createIndex>
+        
+        <!-- Индекс для сортировки транзакций по дате -->
+        <createIndex tableName="transactions" indexName="idx_transaction_created_at">
+            <column name="created_at"/>
+        </createIndex>
+        
+        <!-- Составной индекс для частых запросов -->
+        <createIndex tableName="transactions" indexName="idx_transaction_wallet_created">
+            <column name="wallet_id"/>
+            <column name="created_at"/>
+        </createIndex>
+        
+        <rollback>
+            <dropIndex tableName="wallets" indexName="idx_wallet_id"/>
+            <dropIndex tableName="transactions" indexName="idx_transaction_wallet_id"/>
+            <dropIndex tableName="transactions" indexName="idx_transaction_created_at"/>
+            <dropIndex tableName="transactions" indexName="idx_transaction_wallet_created"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
